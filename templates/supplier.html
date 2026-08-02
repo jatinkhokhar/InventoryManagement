@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suppliers
+{% endblock %}
+
+{% block page_title %}
+Supplier Management
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <!-- Add Supplier -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-primary text-white">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-person-plus-fill"></i>
+
+                    Add Supplier
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <form action="/add_supplier" method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Supplier Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="supplier_name"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Company
+                        </label>
+
+                        <input
+                            type="text"
+                            name="company"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Mobile
+                        </label>
+
+                        <input
+                            type="text"
+                            name="mobile"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Address
+                        </label>
+
+                        <textarea
+                            name="address"
+                            class="form-control"
+                            rows="3"></textarea>
+
+                    </div>
+
+                    <button class="btn btn-success w-100">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        Save Supplier
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Supplier List -->
+
+    <div class="col-lg-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-truck"></i>
+
+                    Supplier List
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+                                <th>ID</th>
+                                <th>Supplier</th>
+                                <th>Company</th>
+                                <th>Mobile</th>
+                                <th>Email</th>
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for supplier in suppliers %}
+
+                        <tr>
+
+                            <td>{{ supplier[0] }}</td>
+
+                            <td>
+
+                                <strong>{{ supplier[1] }}</strong>
+
+                            </td>
+
+                            <td>{{ supplier[2] }}</td>
+
+                            <td>{{ supplier[3] }}</td>
+
+                            <td>{{ supplier[4] }}</td>
+
+                            <td>
+
+                                <a href="/delete_supplier/{{ supplier[0] }}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Delete this supplier?')">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

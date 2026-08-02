@@ -1,0 +1,195 @@
+/* ================= GOOGLE FONT ================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+/* ================= BODY ================= */
+
+body{
+    background:#f4f6f9;
+}
+
+/* ================= WRAPPER ================= */
+
+.wrapper{
+    display:flex;
+    min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:260px;
+    background:#1e293b;
+    color:#fff;
+    position:fixed;
+    left:0;
+    top:0;
+    height:100%;
+    overflow:auto;
+    box-shadow:3px 0 15px rgba(0,0,0,.15);
+}
+
+.logo{
+    text-align:center;
+    padding:25px 10px;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    font-weight:700;
+}
+
+.sidebar a{
+    display:block;
+    color:#d1d5db;
+    text-decoration:none;
+    padding:15px 25px;
+    transition:.3s;
+    font-size:16px;
+}
+
+.sidebar a i{
+    margin-right:12px;
+}
+
+.sidebar a:hover{
+    background:#2563eb;
+    color:#fff;
+    padding-left:35px;
+}
+
+.logout{
+    color:#ff6b6b !important;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    margin-left:260px;
+    width:calc(100% - 260px);
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+    height:70px;
+    background:#ffffff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 30px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.topbar h2{
+    margin:0;
+    font-weight:600;
+}
+
+/* ================= CONTENT ================= */
+
+.content{
+    padding:30px;
+}
+
+/* ================= CARD ================= */
+
+.card{
+    border:none;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+    border-radius:10px;
+}
+
+/* ================= TABLE ================= */
+
+.table{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.table thead{
+    background:#0d6efd;
+    color:white;
+}
+
+/* ================= FORM ================= */
+
+.form-control,
+.form-select{
+    border-radius:10px;
+}
+
+/* ================= BADGE ================= */
+
+.badge{
+    padding:10px 18px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:992px){
+
+.sidebar{
+    width:75px;
+}
+
+.logo{
+    font-size:18px;
+}
+
+.logo{
+    padding:20px 5px;
+}
+
+.sidebar a{
+    text-align:center;
+    padding:18px 5px;
+}
+
+.sidebar a i{
+    margin:0;
+    font-size:22px;
+}
+
+.sidebar a{
+    font-size:0;
+}
+
+.sidebar a i{
+    font-size:22px;
+}
+
+.main{
+    margin-left:75px;
+    width:calc(100% - 75px);
+}
+
+}
+
+@media(max-width:768px){
+
+.topbar{
+    padding:15px;
+}
+
+.content{
+    padding:15px;
+}
+
+}

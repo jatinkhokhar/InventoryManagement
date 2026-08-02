@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}
+Purchase Management
+{% endblock %}
+
+{% block page_title %}
+Purchase Management
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <!-- Purchase Form -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-cart-plus"></i>
+
+                    New Purchase
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <form action="/add_purchase" method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Product
+
+                        </label>
+
+                        <select
+                            name="product_id"
+                            class="form-select"
+                            required>
+
+                            {% for product in products %}
+
+                            <option value="{{ product[0] }}">
+
+                                {{ product[1] }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Supplier
+
+                        </label>
+
+                        <select
+                            name="supplier_id"
+                            class="form-select"
+                            required>
+
+                            {% for supplier in suppliers %}
+
+                            <option value="{{ supplier[0] }}">
+
+                                {{ supplier[1] }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            type="number"
+                            name="quantity"
+                            class="form-control"
+                            min="1"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Purchase Price
+
+                        </label>
+
+                        <input
+                            type="number"
+                            name="purchase_price"
+                            step="0.01"
+                            class="form-control"
+                            min="0"
+                            required>
+
+                    </div>
+
+                    <button class="btn btn-success w-100">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        Save Purchase
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Purchase History -->
+
+    <div class="col-lg-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    Purchase History
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+                                <th>ID</th>
+                                <th>Product</th>
+                                <th>Supplier</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Date</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for purchase in purchases %}
+
+                        <tr>
+
+                            <td>{{ purchase[0] }}</td>
+
+                            <td>
+
+                                <strong>{{ purchase[1] }}</strong>
+
+                            </td>
+
+                            <td>{{ purchase[2] }}</td>
+
+                            <td>
+
+                                <span class="badge bg-primary">
+
+                                    {{ purchase[3] }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                ₹ {{ "%.2f"|format(purchase[4]) }}
+
+                            </td>
+
+                            <td>
+
+                                <strong>
+
+                                    ₹ {{ "%.2f"|format(purchase[3] * purchase[4]) }}
+
+                                </strong>
+
+                            </td>
+
+                            <td>{{ purchase[5] }}</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
