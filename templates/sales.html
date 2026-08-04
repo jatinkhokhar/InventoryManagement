@@ -12,20 +12,17 @@ Sales Management
 
 <div class="row">
 
-    <!-- Sales Form -->
+    <!-- Add Sale -->
 
     <div class="col-lg-4">
 
-        <div class="card shadow">
+        <div class="card shadow-lg border-0">
 
             <div class="card-header bg-danger text-white">
 
                 <h5 class="mb-0">
-
-                    <i class="bi bi-cart-check-fill"></i>
-
+                    <i class="bi bi-cart-check"></i>
                     New Sale
-
                 </h5>
 
             </div>
@@ -45,12 +42,14 @@ Sales Management
                             class="form-select"
                             required>
 
+                            <option value="">
+                                Select Product
+                            </option>
+
                             {% for product in products %}
 
                             <option value="{{ product[0] }}">
-
                                 {{ product[1] }}
-
                             </option>
 
                             {% endfor %}
@@ -92,20 +91,19 @@ Sales Management
                     <div class="mb-3">
 
                         <label class="form-label">
-                            Selling Price
+                            Selling Price (₹)
                         </label>
 
                         <input
                             type="number"
-                            name="selling_price"
                             step="0.01"
+                            name="selling_price"
                             class="form-control"
-                            min="0"
                             required>
 
                     </div>
 
-                    <button class="btn btn-danger w-100">
+                    <button class="btn btn-success w-100">
 
                         <i class="bi bi-check-circle"></i>
 
@@ -125,16 +123,13 @@ Sales Management
 
     <div class="col-lg-8">
 
-        <div class="card shadow">
+        <div class="card shadow-lg border-0">
 
             <div class="card-header bg-dark text-white">
 
                 <h5 class="mb-0">
-
-                    <i class="bi bi-receipt"></i>
-
+                    <i class="bi bi-clock-history"></i>
                     Sales History
-
                 </h5>
 
             </div>
@@ -143,7 +138,7 @@ Sales Management
 
                 <div class="table-responsive">
 
-                    <table class="table table-hover align-middle">
+                    <table class="table table-bordered table-hover">
 
                         <thead class="table-dark">
 
@@ -154,74 +149,50 @@ Sales Management
                                 <th>Customer</th>
                                 <th>Qty</th>
                                 <th>Price</th>
-                                <th>Total</th>
                                 <th>Date</th>
-                                <th>Invoice</th>
 
                             </tr>
 
                         </thead>
 
                         <tbody>
+                        
 
-                        {% for sale in sales %}
+                        {% if sales %}
 
-                        <tr>
+                            {% for sale in sales %}
 
-                            <td>{{ sale[0] }}</td>
+                            <tr>
 
-                            <td>
+                                <td>{{ sale[0] }}</td>
 
-                                <strong>{{ sale[1] }}</strong>
+                                <td>{{ sale[1] }}</td>
 
-                            </td>
+                                <td>{{ sale[2] }}</td>
 
-                            <td>{{ sale[2] }}</td>
+                                <td>{{ sale[3] }}</td>
 
-                            <td>
+                                <td>₹ {{ "%.2f"|format(sale[4]) }}</td>
 
-                                <span class="badge bg-success">
+                                <td>{{ sale[5] }}</td>
 
-                                    {{ sale[3] }}
+                            </tr>
 
-                                </span>
+                            {% endfor %}
 
-                            </td>
+                        {% else %}
 
-                            <td>
+                            <tr>
 
-                                ₹ {{ "%.2f"|format(sale[4]) }}
+                                <td colspan="6" class="text-center text-muted">
 
-                            </td>
+                                    No Sales Record Found
 
-                            <td>
+                                </td>
 
-                                <strong>
+                            </tr>
 
-                                    ₹ {{ "%.2f"|format(sale[3] * sale[4]) }}
-
-                                </strong>
-
-                            </td>
-
-                            <td>{{ sale[5] }}</td>
-
-                            <td>
-
-                                <a href="/invoice/{{ sale[0] }}"
-                                   class="btn btn-primary btn-sm">
-
-                                    <i class="bi bi-file-earmark-pdf"></i>
-
-                                    PDF
-
-                                </a>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
+                        {% endif %}
 
                         </tbody>
 

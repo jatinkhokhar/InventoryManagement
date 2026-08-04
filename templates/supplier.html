@@ -16,16 +16,13 @@ Supplier Management
 
     <div class="col-lg-4">
 
-        <div class="card shadow">
+        <div class="card shadow-lg border-0">
 
             <div class="card-header bg-primary text-white">
 
                 <h5 class="mb-0">
-
                     <i class="bi bi-person-plus-fill"></i>
-
                     Add Supplier
-
                 </h5>
 
             </div>
@@ -51,26 +48,12 @@ Supplier Management
                     <div class="mb-3">
 
                         <label class="form-label">
-                            Company
+                            Phone Number
                         </label>
 
                         <input
                             type="text"
-                            name="company"
-                            class="form-control"
-                            required>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Mobile
-                        </label>
-
-                        <input
-                            type="text"
-                            name="mobile"
+                            name="phone"
                             class="form-control"
                             required>
 
@@ -97,8 +80,8 @@ Supplier Management
 
                         <textarea
                             name="address"
-                            class="form-control"
-                            rows="3"></textarea>
+                            rows="3"
+                            class="form-control"></textarea>
 
                     </div>
 
@@ -122,16 +105,13 @@ Supplier Management
 
     <div class="col-lg-8">
 
-        <div class="card shadow">
+        <div class="card shadow-lg border-0">
 
             <div class="card-header bg-dark text-white">
 
                 <h5 class="mb-0">
-
-                    <i class="bi bi-truck"></i>
-
+                    <i class="bi bi-people-fill"></i>
                     Supplier List
-
                 </h5>
 
             </div>
@@ -140,17 +120,17 @@ Supplier Management
 
                 <div class="table-responsive">
 
-                    <table class="table table-hover align-middle">
+                    <table class="table table-bordered table-hover">
 
                         <thead class="table-dark">
 
                             <tr>
 
                                 <th>ID</th>
-                                <th>Supplier</th>
-                                <th>Company</th>
-                                <th>Mobile</th>
+                                <th>Name</th>
+                                <th>Phone</th>
                                 <th>Email</th>
+                                <th>Address</th>
                                 <th>Action</th>
 
                             </tr>
@@ -159,39 +139,51 @@ Supplier Management
 
                         <tbody>
 
-                        {% for supplier in suppliers %}
+                        {% if suppliers %}
 
-                        <tr>
+                            {% for supplier in suppliers %}
 
-                            <td>{{ supplier[0] }}</td>
+                            <tr>
 
-                            <td>
+                                <td>{{ supplier[0] }}</td>
 
-                                <strong>{{ supplier[1] }}</strong>
+                                <td>{{ supplier[1] }}</td>
 
-                            </td>
+                                <td>{{ supplier[2] }}</td>
 
-                            <td>{{ supplier[2] }}</td>
+                                <td>{{ supplier[3] }}</td>
 
-                            <td>{{ supplier[3] }}</td>
+                                <td>{{ supplier[4] }}</td>
 
-                            <td>{{ supplier[4] }}</td>
+                                <td>
 
-                            <td>
+                                    <a href="/delete_supplier/{{ supplier[0] }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Delete this supplier?')">
 
-                                <a href="/delete_supplier/{{ supplier[0] }}"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Delete this supplier?')">
+                                        <i class="bi bi-trash"></i>
 
-                                    <i class="bi bi-trash"></i>
+                                    </a>
 
-                                </a>
+                                </td>
 
-                            </td>
+                            </tr>
 
-                        </tr>
+                            {% endfor %}
 
-                        {% endfor %}
+                        {% else %}
+
+                            <tr>
+
+                                <td colspan="6" class="text-center">
+
+                                    No Supplier Found
+
+                                </td>
+
+                            </tr>
+
+                        {% endif %}
 
                         </tbody>
 

@@ -1,12 +1,14 @@
 import mysql.connector
 
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Jatin#6099",
-    database="inventory_db"
+    host="gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    port=4000,
+    user="2oYHttVxiPJa1jB.root",
+    password="E3CPPMmOVah4zjqeu",
+    database="sys",
+    ssl_ca="ca.pem"
 )
 
 cursor = conn.cursor()
 
-print("✅ Database Connected Successfully")
+print("✅ TiDB Connected Successfully")

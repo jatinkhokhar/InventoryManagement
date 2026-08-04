@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Products
+View Products
 {% endblock %}
 
 {% block page_title %}
@@ -10,40 +10,42 @@ Product Management
 
 {% block content %}
 
-<div class="card shadow-sm">
+<div class="card shadow-lg border-0">
+
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+        <h4 class="mb-0">
+            <i class="bi bi-box-seam"></i>
+            All Products
+        </h4>
+
+        <a href="/add_product" class="btn btn-light">
+            <i class="bi bi-plus-circle"></i>
+            Add Product
+        </a>
+
+    </div>
 
     <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Search -->
 
-            <h3 class="mb-0">
-                <i class="bi bi-box-seam"></i>
-                Product List
-            </h3>
+        <form action="/search" method="POST" class="mb-4">
 
-            <a href="/add_product" class="btn btn-success">
-                <i class="bi bi-plus-circle"></i>
-                Add Product
-            </a>
-
-        </div>
-
-        <form action="/search" method="POST">
-
-            <div class="input-group mb-4">
-
-                <span class="input-group-text">
-                    <i class="bi bi-search"></i>
-                </span>
+            <div class="input-group">
 
                 <input
                     type="text"
-                    class="form-control"
                     name="keyword"
-                    placeholder="Search by Product Name or Category">
+                    class="form-control"
+                    placeholder="Search Product or Category">
 
                 <button class="btn btn-primary">
+
+                    <i class="bi bi-search"></i>
+
                     Search
+
                 </button>
 
             </div>
@@ -52,7 +54,7 @@ Product Management
 
         <div class="table-responsive">
 
-            <table class="table table-hover align-middle">
+            <table class="table table-hover table-bordered align-middle">
 
                 <thead class="table-dark">
 
@@ -64,7 +66,7 @@ Product Management
                         <th>Quantity</th>
                         <th>Price</th>
                         <th>Created</th>
-                        <th width="180">Action</th>
+                        <th width="170">Action</th>
 
                     </tr>
 
@@ -72,84 +74,90 @@ Product Management
 
                 <tbody>
 
-                {% for product in products %}
+                {% if products %}
 
-                <tr>
+                    {% for product in products %}
 
-                    <td>{{ product[0] }}</td>
+                    <tr>
 
-                    <td>
+                        <td>{{ product[0] }}</td>
 
-                        <strong>{{ product[1] }}</strong>
+                        <td>{{ product[1] }}</td>
 
-                    </td>
+                        <td>
 
-                    <td>
-
-                        <span class="badge bg-info">
-
-                            {{ product[2] }}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        {% if product[3] < 5 %}
-
-                            <span class="badge bg-danger">
-
-                                {{ product[3] }}
-
+                            <span class="badge bg-info text-dark">
+                                {{ product[2] }}
                             </span>
 
-                        {% else %}
+                        </td>
 
-                            <span class="badge bg-success">
+                        <td>
 
-                                {{ product[3] }}
+                            {% if product[3] < 5 %}
 
-                            </span>
+                                <span class="badge bg-danger">
+                                    {{ product[3] }}
+                                </span>
 
-                        {% endif %}
+                            {% else %}
 
-                    </td>
+                                <span class="badge bg-success">
+                                    {{ product[3] }}
+                                </span>
 
-                    <td>
+                            {% endif %}
 
-                        ₹ {{ "%.2f"|format(product[4]) }}
+                        </td>
 
-                    </td>
+                        <td>
 
-                    <td>
+                            ₹ {{ "%.2f"|format(product[4]) }}
 
-                        {{ product[5] }}
+                        </td>
 
-                    </td>
+                        <td>
 
-                    <td>
+                            {{ product[5] }}
 
-                        <a href="/edit_product/{{ product[0] }}"
-                           class="btn btn-warning btn-sm">
+                        </td>
 
-                            <i class="bi bi-pencil-square"></i>
+                        <td>
 
-                        </a>
+                            <a href="/edit_product/{{ product[0] }}"
+                               class="btn btn-warning btn-sm">
 
-                        <a href="/delete_product/{{ product[0] }}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Delete this product?')">
+                                <i class="bi bi-pencil-square"></i>
 
-                            <i class="bi bi-trash"></i>
+                            </a>
 
-                        </a>
+                            <a href="/delete_product/{{ product[0] }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Delete this product?')">
 
-                    </td>
+                                <i class="bi bi-trash"></i>
 
-                </tr>
+                            </a>
 
-                {% endfor %}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="7" class="text-center text-muted">
+
+                            No Products Found
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
 
                 </tbody>
 

@@ -1,12 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}
-Edit Product
-{% endblock %}
+{% block title %}Edit Product{% endblock %}
 
-{% block page_title %}
-Edit Product
-{% endblock %}
+{% block page_title %}Edit Product{% endblock %}
 
 {% block content %}
 
@@ -19,11 +15,8 @@ Edit Product
             <div class="card-header bg-warning text-dark">
 
                 <h4 class="mb-0">
-
                     <i class="bi bi-pencil-square"></i>
-
                     Edit Product
-
                 </h4>
 
             </div>
@@ -35,9 +28,7 @@ Edit Product
                     <div class="mb-3">
 
                         <label class="form-label">
-
                             Product Name
-
                         </label>
 
                         <input
@@ -52,24 +43,21 @@ Edit Product
                     <div class="mb-3">
 
                         <label class="form-label">
-
                             Category
-
                         </label>
 
                         <select
-                            name="category"
+                            name="category_id"
                             class="form-select"
                             required>
 
                             {% for category in categories %}
 
-                                <option value="{{ category[0] }}"
-                                {% if category[0] == product[2] %}selected{% endif %}>
-
-                                    {{ category[0] }}
-
-                                </option>
+                            <option
+                                value="{{ category[0] }}"
+                                {% if product[2] == category[0] %}selected{% endif %}>
+                                {{ category[1] }}
+                            </option>
 
                             {% endfor %}
 
@@ -80,9 +68,7 @@ Edit Product
                     <div class="mb-3">
 
                         <label class="form-label">
-
                             Quantity
-
                         </label>
 
                         <input
@@ -97,9 +83,7 @@ Edit Product
                     <div class="mb-3">
 
                         <label class="form-label">
-
-                            Price
-
+                            Price (₹)
                         </label>
 
                         <input
@@ -112,19 +96,13 @@ Edit Product
 
                     </div>
 
-                    <button class="btn btn-warning">
-
+                    <button class="btn btn-success">
                         <i class="bi bi-check-circle"></i>
-
                         Update Product
-
                     </button>
 
-                    <a href="/view_products"
-                       class="btn btn-secondary">
-
+                    <a href="/view_products" class="btn btn-secondary">
                         Cancel
-
                     </a>
 
                 </form>

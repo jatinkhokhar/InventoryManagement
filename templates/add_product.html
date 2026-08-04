@@ -10,104 +10,123 @@ Add New Product
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="container mt-4">
 
-    <div class="col-lg-7">
+    <div class="row justify-content-center">
 
-        <div class="card shadow">
+        <div class="col-lg-7">
 
-            <div class="card-header bg-primary text-white">
+            <div class="card shadow-lg border-0 rounded-4">
 
-                <h4 class="mb-0">
-                    <i class="bi bi-plus-circle"></i>
-                    Add Product
-                </h4>
+                <div class="card-header bg-primary text-white py-3">
 
-            </div>
+                    <h4 class="mb-0">
+                        <i class="bi bi-box-seam"></i>
+                        Add New Product
+                    </h4>
 
-            <div class="card-body">
+                </div>
 
-                <form method="POST">
+                <div class="card-body p-4">
 
-                    <div class="mb-3">
+                    <form method="POST">
 
-                        <label class="form-label">
-                            Product Name
-                        </label>
+                        <!-- Product Name -->
 
-                        <input
-                            type="text"
-                            name="name"
-                            class="form-control"
-                            required>
+                        <div class="mb-3">
 
-                    </div>
+                            <label class="form-label fw-bold">
+                                Product Name
+                            </label>
 
-                    <div class="mb-3">
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control"
+                                placeholder="Enter Product Name"
+                                required>
 
-                        <label class="form-label">
-                            Category
-                        </label>
+                        </div>
 
-                        <select
-                            name="category"
-                            class="form-select"
-                            required>
+                        <!-- Category -->
 
-                            {% for category in categories %}
+                        <div class="mb-3">
 
-                            <option value="{{ category[0] }}">
-                                {{ category[0] }}
-                            </option>
+                            <label class="form-label fw-bold">
+                                Category
+                            </label>
 
-                            {% endfor %}
+                            <select name="category_id" class="form-select" required>
 
-                        </select>
+                                {% for category in categories %}
 
-                    </div>
+                                <option value="{{ category[0] }}">
+                                    {{ category[1] }}
+                                </option>
 
-                    <div class="mb-3">
+                                {% endfor %}
 
-                        <label class="form-label">
-                            Quantity
-                        </label>
+                            </select>
 
-                        <input
-                            type="number"
-                            name="quantity"
-                            class="form-control"
-                            required>
+                        </div>
 
-                    </div>
+                        <!-- Quantity -->
 
-                    <div class="mb-3">
+                        <div class="mb-3">
 
-                        <label class="form-label">
-                            Price
-                        </label>
+                            <label class="form-label fw-bold">
+                                Quantity
+                            </label>
 
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="price"
-                            class="form-control"
-                            required>
+                            <input
+                                type="number"
+                                name="quantity"
+                                class="form-control"
+                                placeholder="Enter Quantity"
+                                required>
 
-                    </div>
+                        </div>
 
-                    <button class="btn btn-success">
-                        <i class="bi bi-check-circle"></i>
-                        Save Product
-                    </button>
+                        <!-- Price -->
 
-                    <a href="/view_products"
-                       class="btn btn-secondary">
+                        <div class="mb-3">
 
-                        Cancel
+                            <label class="form-label fw-bold">
+                                Price (₹)
+                            </label>
 
-                    </a>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="price"
+                                class="form-control"
+                                placeholder="Enter Price"
+                                required>
 
-                </form>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+
+                            <button class="btn btn-success px-4">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Save Product
+
+                            </button>
+
+                            <a href="/view_products"
+                               class="btn btn-secondary px-4">
+
+                                Cancel
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 
