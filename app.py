@@ -28,7 +28,7 @@ def connect_db():
         user="2oYHttVxiPJa1jB.root",
         password="rE0fXO2tsl5Qp1pM",
         database="inventory_db",
-        ssl_ca="isrgrootx1.pem",   # apni CA file ka exact naam
+        ssl_ca="ca.pem",   # apni CA file ka exact naam
         autocommit=True,
         connection_timeout=30
     )
