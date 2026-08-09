@@ -70,48 +70,28 @@ def home():
 def login():
 
     username = request.form.get("username", "").strip()
-    password = request.form.get("password", "").strip()
+    password = request.form.get("password", "")
 
     cursor = get_cursor()
 
-    cursor.execute(
-        "SELECT id, full_name, username, password, role FROM users WHERE username=%s",
-        (username,)
-    )
+    cursor.execute("""
+        SELECT id, full_name, username, password, role
+        FROM users
+        WHERE username = %s
+          AND password = %s
+    """, (username, password))
 
     user = cursor.fetchone()
 
-    if user is None:
-        return """
-        <h3 style="color:red;text-align:center;margin-top:100px;">
-        Invalid Username or Password
-        </h3>
-        <p style="text-align:center;">
+    if user:
+        return redirect("/dashboard")
+
+    return """
+    <center style="margin-top:120px;font-family:Arial">
+        <h2 style="color:red">Invalid Username or Password</h2>
         <a href="/">Back to Login</a>
-        </p>
-        """
-
-    # MySQL connector normally returns tuple
-    db_password = user[3]
-
-    if password != db_password:
-        return """
-        <h3 style="color:red;text-align:center;margin-top:100px;">
-        Invalid Username or Password
-        </h3>
-        <p style="text-align:center;">
-        <a href="/">Back to Login</a>
-        </p>
-        """
-
-    # Login successful
-    session["user_id"] = user[0]
-    session["full_name"] = user[1]
-    session["username"] = user[2]
-    session["role"] = user[4]
-
-    return redirect("/dashboard")# =====================================================
-# DASHBOARD
+    </center>
+    """# DASHBOARD
 # =====================================================
 
 @app.route("/dashboard")
