@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, send_file
+from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 from reportlab.pdfgen import canvas
 import os
 
 app = Flask(__name__)
+app.secret_key = "inventory-management-secret-key"
 
 # =====================================================
 # DATABASE CONNECTION
@@ -68,22 +69,48 @@ def home():
 @app.route("/login", methods=["POST"])
 def login():
 
-    username = request.form["username"]
-    password = request.form["password"]
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "").strip()
 
-    if username == "_jatinkhokhar_" and password == "Jatin#6099":
-        return redirect("/dashboard")
+    cursor = get_cursor()
 
-    return """
-    <center style="margin-top:100px">
-        <h2 style="color:red;">Invalid Username or Password</h2>
-        <br>
-        <a href="/">Back</a>
-    </center>
-    """
+    cursor.execute(
+        "SELECT id, full_name, username, password, role FROM users WHERE username=%s",
+        (username,)
+    )
 
+    user = cursor.fetchone()
 
-# =====================================================
+    if user is None:
+        return """
+        <h3 style="color:red;text-align:center;margin-top:100px;">
+        Invalid Username or Password
+        </h3>
+        <p style="text-align:center;">
+        <a href="/">Back to Login</a>
+        </p>
+        """
+
+    # MySQL connector normally returns tuple
+    db_password = user[3]
+
+    if password != db_password:
+        return """
+        <h3 style="color:red;text-align:center;margin-top:100px;">
+        Invalid Username or Password
+        </h3>
+        <p style="text-align:center;">
+        <a href="/">Back to Login</a>
+        </p>
+        """
+
+    # Login successful
+    session["user_id"] = user[0]
+    session["full_name"] = user[1]
+    session["username"] = user[2]
+    session["role"] = user[4]
+
+    return redirect("/dashboard")# =====================================================
 # DASHBOARD
 # =====================================================
 
