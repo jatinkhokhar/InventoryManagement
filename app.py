@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, send_file
 import mysql.connector
 from reportlab.pdfgen import canvas
 import os
@@ -675,7 +675,7 @@ def add_sale():
 
     conn.commit()
 
-    return redirect("/invoice/" + str(sale_id))
+    return redirect("/sales")
 # =====================================================
 # PDF INVOICE
 # =====================================================
