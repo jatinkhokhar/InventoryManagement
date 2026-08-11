@@ -13,6 +13,7 @@ Sales Management
 <div class="row">
 
     <!-- Add Sale -->
+
     <div class="col-lg-4">
 
         <div class="card shadow-lg border-0">
@@ -29,8 +30,6 @@ Sales Management
             <div class="card-body">
 
                 <form action="/add_sale" method="POST">
-
-                    <!-- Product -->
 
                     <div class="mb-3">
 
@@ -59,8 +58,6 @@ Sales Management
 
                     </div>
 
-                    <!-- Customer -->
-
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -75,9 +72,20 @@ Sales Management
                             required>
 
                     </div>
+                    <div class="mb-3">
 
-                    <!-- Quantity -->
+                        <label class="form-label fw-bold">
+                            Customer GSTIN
+                        </label>
 
+                        <input
+                            type="text"
+                            name="customer_gstin"
+                            class="form-control"
+                            placeholder="Enter Customer GSTIN"
+                            maxlength="15">
+
+                    </div>
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -93,8 +101,6 @@ Sales Management
 
                     </div>
 
-                    <!-- Selling Price -->
-
                     <div class="mb-3">
 
                         <label class="form-label">
@@ -106,18 +112,34 @@ Sales Management
                             step="0.01"
                             name="selling_price"
                             class="form-control"
-                            placeholder="Enter Selling Price"
                             required>
 
                     </div>
+                    <div class="mb-3">
 
-                    <!-- Save Sale -->
+                        <label class="form-label">
+                            GST (%)
+                        </label>
 
-                    <button
-                        type="submit"
-                        class="btn btn-success w-100">
+                        <select
+                            name="gst_rate"
+                            class="form-select"
+                            required>
+
+                            <option value="0">0%</option>
+                            <option value="5">5%</option>
+                            <option value="12">12%</option>
+                            <option value="18" selected>18%</option>
+                            <option value="28">28%</option>
+
+                        </select>
+
+                    </div>
+
+                    <button class="btn btn-success w-100">
 
                         <i class="bi bi-check-circle"></i>
+
                         Save Sale
 
                     </button>
@@ -130,7 +152,6 @@ Sales Management
 
     </div>
 
-
     <!-- Sales History -->
 
     <div class="col-lg-8">
@@ -140,10 +161,8 @@ Sales Management
             <div class="card-header bg-dark text-white">
 
                 <h5 class="mb-0">
-
                     <i class="bi bi-clock-history"></i>
                     Sales History
-
                 </h5>
 
             </div>
@@ -152,32 +171,26 @@ Sales Management
 
                 <div class="table-responsive">
 
-                    <table class="table table-bordered table-hover align-middle">
+                    <table class="table table-bordered table-hover">
 
                         <thead class="table-dark">
 
                             <tr>
 
                                 <th>ID</th>
-
                                 <th>Product</th>
-
                                 <th>Customer</th>
-
                                 <th>Qty</th>
-
                                 <th>Price</th>
-
                                 <th>Date</th>
-
                                 <th>Invoice</th>
 
                             </tr>
 
                         </thead>
 
-
                         <tbody>
+                        
 
                         {% if sales %}
 
@@ -185,41 +198,26 @@ Sales Management
 
                             <tr>
 
-                                <td>
-                                    {{ sale[0] }}
-                                </td>
+                                <td>{{ sale[0] }}</td>
 
-                                <td>
-                                    {{ sale[1] }}
-                                </td>
+                                <td>{{ sale[1] }}</td>
 
-                                <td>
-                                    {{ sale[2] }}
-                                </td>
+                                <td>{{ sale[2] }}</td>
 
-                                <td>
-                                    {{ sale[3] }}
-                                </td>
+                                <td>{{ sale[3] }}</td>
 
-                                <td>
-                                    ₹ {{ "%.2f"|format(sale[4]) }}
-                                </td>
+                                <td>₹ {{ "%.2f"|format(sale[4]) }}</td>
 
+                                <td>{{ sale[5] }}</td>
                                 <td>
-                                    {{ sale[5] }}
-                                </td>
-
-                                <td>
-
                                     <a
-                                        href="/invoice/{{ sale[0] }}"
-                                        class="btn btn-sm btn-primary">
+                                        href="{{ url_for('invoice', sale_id=sale[0]) }}"
+                                        class="btn btn-sm btn-danger"
+                                        target="_blank">
 
                                         <i class="bi bi-file-earmark-pdf"></i>
-                                        Invoice
-
+                                            PDF
                                     </a>
-
                                 </td>
 
                             </tr>
@@ -230,9 +228,7 @@ Sales Management
 
                             <tr>
 
-                                <td
-                                    colspan="7"
-                                    class="text-center text-muted">
+                                <td colspan="7" class="text-center text-muted">
 
                                     No Sales Record Found
 

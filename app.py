@@ -2,7 +2,11 @@ from flask import Flask, render_template, request, redirect, send_file
 import mysql.connector
 from reportlab.pdfgen import canvas
 import os
-
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib.units import mm
+COMPANY_GSTIN = "24XXXXXXXXXXXXXX"
 app = Flask(__name__)
 app.secret_key = "inventory-management-secret-key"
 
@@ -552,7 +556,14 @@ def add_purchase():
         quantity,
         purchase_price
     ))
-
+    cursor.execute("""
+        UPDATE products
+        SET quantity = quantity + %s
+        WHERE id=%s
+        """, (
+        quantity,
+        product_id
+))
     # Update Stock
     cursor.execute("""
         UPDATE products
@@ -618,8 +629,10 @@ def add_sale():
 
     product_id = request.form["product_id"]
     customer_name = request.form["customer_name"]
+    customer_gstin = request.form.get("customer_gstin", "").strip().upper()
     quantity = int(request.form["quantity"])
     selling_price = float(request.form["selling_price"])
+    gst_rate = float(request.form["gst_rate"])
 
     # Check Stock
     cursor.execute(
@@ -650,15 +663,19 @@ def add_sale():
         (
             product_id,
             customer_name,
+            customer_gstin,
             quantity,
-            selling_price
+            selling_price,
+            gst_rate
         )
-        VALUES(%s,%s,%s,%s)
+        VALUES(%s,%s,%s,%s,%s,%s)
     """, (
         product_id,
         customer_name,
+        customer_gstin,
         quantity,
-        selling_price
+        selling_price,
+        gst_rate
     ))
 
     sale_id = cursor.lastrowid
@@ -676,10 +693,9 @@ def add_sale():
     conn.commit()
 
     return redirect("/sales")
-# =====================================================
-# PDF INVOICE
-# =====================================================
-
+    # =====================================================
+    # PDF INVOICE
+    # =====================================================
 @app.route("/invoice/<int:sale_id>")
 def invoice(sale_id):
 
@@ -690,9 +706,11 @@ def invoice(sale_id):
             s.id,
             p.name,
             s.customer_name,
+            s.customer_gstin,
             s.quantity,
             s.selling_price,
-            s.sale_date
+            s.sale_date,
+            s.gst_rate
         FROM sales s
         INNER JOIN products p
             ON s.product_id = p.id
@@ -704,36 +722,433 @@ def invoice(sale_id):
     if sale is None:
         return "<h2>Invoice Not Found</h2>"
 
+    # GST Calculation
+    gst_rate = float(sale[7])
+
+    subtotal = sale[4] * float(sale[5])
+
+    gst_amount = subtotal * gst_rate / 100
+
+    cgst = gst_amount / 2
+    sgst = gst_amount / 2
+
+    grand_total = subtotal + gst_amount
+
+    # Invoice folder
     if not os.path.exists("invoices"):
         os.makedirs("invoices")
 
     pdf_path = f"invoices/invoice_{sale_id}.pdf"
 
-    pdf = canvas.Canvas(pdf_path)
+    # A4 PDF
+    pdf = canvas.Canvas(
+        pdf_path,
+        pagesize=A4
+    )
+
+    width, height = A4
+    # =====================================================
+    # COMPANY HEADER
+    # =====================================================
 
     pdf.setFont("Helvetica-Bold", 20)
-    pdf.drawString(180, 800, "Inventory Invoice")
+    pdf.setFillColor(colors.HexColor("#333333"))
+    pdf.drawString(25 * mm, height - 25 * mm, "Inventory Management")
 
-    pdf.setFont("Helvetica", 12)
-    pdf.drawString(50, 760, f"Invoice ID : {sale[0]}")
-    pdf.drawString(50, 735, f"Customer : {sale[2]}")
-    pdf.drawString(50, 710, f"Product : {sale[1]}")
-    pdf.drawString(50, 685, f"Quantity : {sale[3]}")
-    pdf.drawString(50, 660, f"Price : ₹ {sale[4]}")
+    pdf.setFont("Helvetica", 9)
+    pdf.setFillColor(colors.black)
 
-    total = sale[3] * float(sale[4])
+    pdf.drawString(25 * mm, height - 31 * mm, "Gandhinagar, Gujarat")
+    pdf.drawString(25 * mm, height - 36 * mm, "Phone: +91 XXXXX XXXXX")
+    pdf.drawString(25 * mm, height - 41 * mm, "Email: inventory@example.com")
 
-    pdf.drawString(50, 635, f"Total Amount : ₹ {total:.2f}")
-    pdf.drawString(50, 610, f"Date : {sale[5]}")
+    # =====================================================
+    # INVOICE TITLE
+    # =====================================================
 
-    pdf.line(50, 590, 550, 590)
+    pdf.setFont("Helvetica-Bold", 28)
+    pdf.setFillColor(colors.HexColor("#4A5D9A"))
+    pdf.drawRightString(
+        width - 25 * mm,
+        height - 25 * mm,
+        "INVOICE"
+    )
 
-    pdf.drawString(50, 560, "Thank You For Your Purchase!")
+    pdf.setFillColor(colors.black)
+    pdf.setFont("Helvetica", 9)
 
+    pdf.drawRightString(
+        width - 25 * mm,
+        height - 32 * mm,
+        f"DATE: {sale[5]}"
+    )
+
+    pdf.drawRightString(
+        width - 25 * mm,
+        height - 37 * mm,
+        f"INVOICE #: {sale[0]}"
+    )
+
+    pdf.drawRightString(
+        width - 25 * mm,
+        height - 42 * mm,
+        f"CUSTOMER ID: {sale[0]}"
+    )
+
+    # =====================================================
+    # BILL TO
+    # =====================================================
+
+    bill_y = height - 62 * mm
+
+    pdf.setFillColor(colors.HexColor("#40558F"))
+
+    pdf.rect(
+    25 * mm,
+    bill_y,
+    60 * mm,
+    7 * mm,
+    fill=1,
+    stroke=0
+    )
+
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 10)
+
+    pdf.drawString(
+    28 * mm,
+    bill_y + 2 * mm,
+    "BILL TO"
+    )
+
+    pdf.setFillColor(colors.black)
+    pdf.setFont("Helvetica", 9)
+
+    # Customer Name
+    pdf.drawString(
+    25 * mm,
+    bill_y - 6 * mm,
+    f"Name: {sale[2]}"
+    )
+
+    # Customer GSTIN
+    pdf.drawString(
+    25 * mm,
+    bill_y - 12 * mm,
+    f"GSTIN: {sale[3] if sale[3] else 'N/A'}"
+    )
+
+    # Company
+    pdf.drawString(
+    25 * mm,
+    bill_y - 18 * mm,
+    "Company: __________________"
+    )
+
+    # Address
+    pdf.drawString(
+    25 * mm,
+    bill_y - 24 * mm,
+    "Address: __________________"
+    )
+
+    # Phone
+    pdf.drawString(
+    25 * mm,
+    bill_y - 30 * mm,
+    "Phone: ____________________"
+    )
+    # =====================================================
+    # PRODUCT TABLE
+    # =====================================================
+
+    table_y = height - 105 * mm
+
+    quantity = int(sale[3])
+    selling_price = float(sale[4])
+
+    amount = quantity * selling_price
+
+    data = [
+        [
+            "DESCRIPTION",
+            "QTY",
+            "PRICE",
+            "AMOUNT"
+        ],
+        [
+            sale[1],
+            str(quantity),
+            f"Rs. {selling_price:.2f}",
+            f"Rs. {amount:.2f}"
+        ]
+    ]
+
+    table = Table(
+        data,
+        colWidths=[
+            95 * mm,
+            20 * mm,
+            35 * mm,
+            35 * mm
+        ],
+        rowHeights=[
+            9 * mm,
+            9 * mm
+        ]
+    )
+
+    table.setStyle(TableStyle([
+
+        # Header
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, 0),
+            colors.HexColor("#40558F")
+        ),
+
+        (
+            "TEXTCOLOR",
+            (0, 0),
+            (-1, 0),
+            colors.white
+        ),
+
+        (
+            "FONTNAME",
+            (0, 0),
+            (-1, 0),
+            "Helvetica-Bold"
+        ),
+
+        (
+            "FONTSIZE",
+            (0, 0),
+            (-1, -1),
+            9
+        ),
+
+        (
+            "ALIGN",
+            (1, 0),
+            (-1, -1),
+            "RIGHT"
+        ),
+
+        (
+            "ALIGN",
+            (0, 0),
+            (0, -1),
+            "LEFT"
+        ),
+
+        (
+            "GRID",
+            (0, 0),
+            (-1, -1),
+            0.5,
+            colors.grey
+        ),
+
+        (
+            "BACKGROUND",
+            (0, 1),
+            (-1, 1),
+            colors.HexColor("#F5F5F5")
+        ),
+
+        (
+            "FONTNAME",
+            (0, 1),
+            (-1, 1),
+            "Helvetica"
+        ),
+
+        (
+            "VALIGN",
+            (0, 0),
+            (-1, -1),
+            "MIDDLE"
+        ),
+
+    ]))
+
+    table.wrapOn(pdf, width, height)
+    table.drawOn(
+        pdf,
+        25 * mm,
+        table_y
+    )
+
+    # =====================================================
+    # TOTAL SECTION WITH GST
+    # =====================================================
+
+    total_x = width - 75 * mm
+
+    summary_y = table_y - 18 * mm
+
+    pdf.setFont("Helvetica", 10)
+    pdf.setFillColor(colors.black)
+
+
+    # -----------------------------------------------------
+    # SUBTOTAL
+    # -----------------------------------------------------
+
+    pdf.drawString(
+    total_x,
+    summary_y,
+    "Subtotal:"
+    )
+
+    pdf.drawRightString(
+    width - 25 * mm,
+    summary_y,
+    f"Rs. {subtotal:.2f}"
+    )
+
+
+    # -----------------------------------------------------
+    # CGST
+    # -----------------------------------------------------
+
+    pdf.drawString(
+    total_x,
+    summary_y - 7 * mm,
+    f"CGST ({gst_rate / 2:.1f}%):"
+    )
+
+    pdf.drawRightString(
+    width - 25 * mm,
+    summary_y - 7 * mm,
+    f"Rs. {cgst:.2f}"
+    )
+
+
+    # -----------------------------------------------------
+    # SGST  
+    # -----------------------------------------------------
+
+    pdf.drawString(
+    total_x,
+    summary_y - 14 * mm,
+    f"SGST ({gst_rate / 2:.1f}%):"
+    )
+
+    pdf.drawRightString(
+    width - 25 * mm,
+    summary_y - 14 * mm,
+    f"Rs. {sgst:.2f}"
+    )
+
+
+    # -----------------------------------------------------
+    # TOTAL BOX
+    # -----------------------------------------------------
+
+    pdf.setFillColor(colors.HexColor("#40558F"))
+
+    pdf.rect(
+    total_x - 5 * mm,
+    summary_y - 28 * mm,
+    55 * mm,
+    11 * mm,
+    fill=1,
+    stroke=0
+    )
+
+
+    pdf.setFillColor(colors.white)
+
+    pdf.setFont(
+    "Helvetica-Bold",
+    11
+    )
+
+
+    pdf.drawString(
+    total_x,
+    summary_y - 24 * mm,
+    "TOTAL"
+    )
+
+
+    pdf.drawRightString(
+    width - 25 * mm,
+    summary_y - 24 * mm,
+    f"Rs. {grand_total:.2f}"
+    )
+
+    # =====================================================
+    # OTHER COMMENTS
+    # =====================================================
+
+    comment_y = summary_y - 48 * mm
+
+    pdf.setFillColor(colors.HexColor("#40558F"))
+    pdf.rect(
+        25 * mm,
+        comment_y,
+        90 * mm,
+        7 * mm,
+        fill=1,
+        stroke=0
+    )
+
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 9)
+
+    pdf.drawString(
+        28 * mm,
+        comment_y + 2 * mm,
+        "OTHER COMMENTS"
+    )
+
+    pdf.setFillColor(colors.black)
+    pdf.setFont("Helvetica", 8)
+
+    pdf.drawString(
+        28 * mm,
+        comment_y - 7 * mm,
+        "1. Thank you for your business."
+    )
+
+    pdf.drawString(
+        28 * mm,
+        comment_y - 13 * mm,
+        "2. Please keep this invoice for your records."
+    )
+
+    # =====================================================
+    # FOOTER
+    # =====================================================
+
+    pdf.setFont("Helvetica", 8)
+
+    pdf.drawCentredString(
+        width / 2,
+        30 * mm,
+        "If you have any questions about this invoice, please contact us."
+    )
+
+    pdf.setFont("Helvetica-BoldOblique", 12)
+
+    pdf.drawCentredString(
+        width / 2,
+        23 * mm,
+        "Thank You For Your Business!"
+    )
+
+    # Save PDF
     pdf.save()
 
-    return send_file(pdf_path, as_attachment=True)
-
+    return send_file(
+        pdf_path,
+        as_attachment=True,
+        download_name=f"invoice_{sale_id}.pdf"
+    )
 
 # =====================================================
 # REPORTS
